@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="uk">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Todo App - React (CDN версія)</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --primary-color: #6366f1;
+                --primary-dark: #4f46e5;
+                --success-color: #10b981;
+                --danger-color: #ef4444;
+                --bg-light: #f3f4f6;
+                --bg-white: #ffffff;
+                --text-dark: #1f2937;
+                --text-gray: #6b7280;
+                --border-color: #e5e7eb;
+                --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                --transition: all 0.3s ease;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+                color: var(--text-dark);
+            }
+
+            #root {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+            }
+
+            .container {
+                max-width: 600px;
+                width: 100%;
+            }
+
+            .todo-app {
+                background: var(--bg-white);
+                border-radius: 16px;
+                box-shadow: var(--shadow);
+                padding: 40px;
+                animation: slideIn 0.5s ease;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            h1 {
+                color: var(--text-dark);
+                margin-bottom: 8px;
+                font-size: 2rem;
+                text-align: center;
+            }
+
+            .subtitle {
+                color: var(--text-gray);
+                font-size: 0.875rem;
+                margin-bottom: 24px;
+                text-align: center;
+            }
+
+            .input-section {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 24px;
+            }
+
+            .todo-input {
+                flex: 1;
+                padding: 12px 16px;
+                border: 2px solid var(--border-color);
+                border-radius: 8px;
+                font-size: 1rem;
+                transition: var(--transition);
+            }
+
+            .todo-input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            }
+
+            .add-btn {
+                padding: 12px 24px;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: var(--transition);
+            }
+
+            .add-btn:hover {
+                background: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            }
+
+            .filter-buttons {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 24px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .filter-btn {
+                padding: 8px 16px;
+                background: var(--bg-light);
+                border: 2px solid transparent;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 0.875rem;
+                font-weight: 500;
+                transition: var(--transition);
+                color: var(--text-gray);
+            }
+
+            .filter-btn:hover {
+                background: #e0e7ff;
+                color: var(--primary-color);
+            }
+
+            .filter-btn.active {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+            }
+
+            .stats {
+                display: flex;
+                justify-content: space-around;
+                margin-bottom: 24px;
+                padding: 16px;
+                background: var(--bg-light);
+                border-radius: 8px;
+                gap: 16px;
+            }
+
+            .stats > div {
+                text-align: center;
+            }
+
+            .stats strong {
+                display: block;
+                font-size: 0.875rem;
+                color: var(--text-gray);
+                margin-bottom: 4px;
+            }
+
+            .stats span {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--primary-color);
+            }
+
+            .todo-list {
+                list-style: none;
+                margin-bottom: 24px;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+
+            .todo-list::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .todo-list::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+
+            .todo-list::-webkit-scrollbar-thumb {
+                background: var(--primary-color);
+                border-radius: 10px;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 40px 16px;
+                color: var(--text-gray);
+                font-style: italic;
+                list-style: none;
+            }
+
+            .todo-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 16px;
+                background: var(--bg-white);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                margin-bottom: 8px;
+                transition: var(--transition);
+            }
+
+            .todo-item:hover {
+                border-color: var(--primary-color);
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+            }
+
+            .todo-item.completed {
+                opacity: 0.6;
+                background: #f9fafb;
+            }
+
+            .todo-item.completed .todo-text {
+                text-decoration: line-through;
+                color: var(--text-gray);
+            }
+
+            .todo-checkbox {
+                width: 20px;
+                height: 20px;
+                min-width: 20px;
+                cursor: pointer;
+                accent-color: var(--success-color);
+                margin-top: 2px;
+            }
+
+            .todo-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                min-width: 0;
+            }
+
+            .todo-text {
+                color: var(--text-dark);
+                word-break: break-word;
+                line-height: 1.5;
+            }
+
+            .todo-date {
+                font-size: 0.75rem;
+                color: var(--text-gray);
+            }
+
+            .delete-btn {
+                padding: 6px 8px;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 1.2rem;
+                transition: var(--transition);
+                border-radius: 4px;
+                flex-shrink: 0;
+            }
+
+            .delete-btn:hover {
+                background: rgba(239, 68, 68, 0.1);
+                transform: scale(1.1);
+            }
+
+            .actions {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .clear-btn,
+            .delete-all-btn {
+                flex: 1;
+                min-width: 140px;
+                padding: 12px 16px;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+                font-size: 0.875rem;
+            }
+
+            .clear-btn {
+                background: #fbbf24;
+                color: white;
+            }
+
+            .clear-btn:hover {
+                background: #f59e0b;
+                transform: translateY(-2px);
+            }
+
+            .delete-all-btn {
+                background: var(--danger-color);
+                color: white;
+            }
+
+            .delete-all-btn:hover {
+                background: #dc2626;
+                transform: translateY(-2px);
+            }
+
+            @media (max-width: 480px) {
+                .todo-app {
+                    padding: 20px;
+                }
+
+                h1 {
+                    font-size: 1.5rem;
+                }
+
+                .input-section {
+                    flex-direction: column;
+                }
+
+                .add-btn {
+                    width: 100%;
+                }
+
+                .stats {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                .actions {
+                    flex-direction: column;
+                }
+
+                .clear-btn,
+                .delete-all-btn {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+
+        <!-- React та ReactDOM з CDN -->
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+        <!-- Babel для JSX трансформації -->
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <script type="text/babel">
+            const { useState, useEffect } = React;
+
+            function TodoInput({ onAddTodo }) {
+                const [input, setInput] = useState("");
+
+                const handleAdd = () => {
+                    onAddTodo(input);
+                    setInput("");
+                };
+
+                const handleKeyPress = (e) => {
+                    if (e.key === "Enter") {
+                        handleAdd();
+                    }
+                };
+
+                return (
+                    <div className="input-section">
+                        <input
+                            type="text"
+                            className="todo-input"
+                            placeholder="Введіть нову справу..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            autoComplete="off"
+                        />
+                        <button className="add-btn" onClick={handleAdd}>
+                            Додати
+                        </button>
+                    </div>
+                );
+            }
+
+            function TodoItem({ todo, onToggle, onDelete }) {
+                const handleDelete = () => {
+                    if (window.confirm("Ви впевнені?")) {
+                        onDelete(todo.id);
+                    }
+                };
+
+                return (
+                    <li className={`todo-item ${todo.completed ? "completed" : ""}`}>
+                        <input type="checkbox" className="todo-checkbox" checked={todo.completed} onChange={() => onToggle(todo.id)} />
+                        <div className="todo-content">
+                            <span className="todo-text">{todo.text}</span>
+                            <span className="todo-date">{todo.createdAt}</span>
+                        </div>
+                        <button className="delete-btn" onClick={handleDelete} title="Видалити">
+                            🗑️
+                        </button>
+                    </li>
+                );
+            }
+
+            function TodoList({ todos, onToggle, onDelete }) {
+                if (todos.length === 0) {
+                    return (
+                        <ul className="todo-list">
+                            <li className="empty-state">✨ Список порожній!</li>
+                        </ul>
+                    );
+                }
+
+                return (
+                    <ul className="todo-list">
+                        {todos.map((todo) => (
+                            <TodoItem key={todo.id} todo={todo} onToggle={onToggle} onDelete={onDelete} />
+                        ))}
+                    </ul>
+                );
+            }
+
+            function FilterButtons({ currentFilter, onFilterChange }) {
+                const filters = [
+                    { value: "all", label: "Всі" },
+                    { value: "active", label: "Активні" },
+                    { value: "completed", label: "Виконані" },
+                ];
+
+                return (
+                    <div className="filter-buttons">
+                        {filters.map((filter) => (
+                            <button
+                                key={filter.value}
+                                className={`filter-btn ${currentFilter === filter.value ? "active" : ""}`}
+                                onClick={() => onFilterChange(filter.value)}
+                            >
+                                {filter.label}
+                            </button>
+                        ))}
+                    </div>
+                );
+            }
+
+            function TodoStats({ total, completed, active }) {
+                return (
+                    <div className="stats">
+                        <div>
+                            <strong>Всього:</strong>
+                            <span>{total}</span>
+                        </div>
+                        <div>
+                            <strong>Активних:</strong>
+                            <span>{active}</span>
+                        </div>
+                        <div>
+                            <strong>Виконаних:</strong>
+                            <span>{completed}</span>
+                        </div>
+                    </div>
+                );
+            }
+
+            function App() {
+                const [todos, setTodos] = useState([]);
+                const [currentFilter, setCurrentFilter] = useState("all");
+
+                // Завантажити з localStorage при монтуванні
+                useEffect(() => {
+                    const saved = localStorage.getItem("todos");
+                    if (saved) {
+                        try {
+                            setTodos(JSON.parse(saved));
+                        } catch (error) {
+                            console.error("Помилка при завантаженні todos:", error);
+                        }
+                    }
+                }, []);
+
+                // Зберегти до localStorage при зміні
+                useEffect(() => {
+                    localStorage.setItem("todos", JSON.stringify(todos));
+                }, [todos]);
+
+                const handleAddTodo = (text) => {
+                    if (!text.trim()) {
+                        alert("Будь ласка, введіть текст справи!");
+                        return;
+                    }
+
+                    const newTodo = {
+                        id: Date.now(),
+                        text: text.trim(),
+                        completed: false,
+                        createdAt: new Date().toLocaleString("uk-UA"),
+                    };
+
+                    setTodos([...todos, newTodo]);
+                };
+
+                const handleToggleTodo = (id) => {
+                    setTodos(todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)));
+                };
+
+                const handleDeleteTodo = (id) => {
+                    setTodos(todos.filter((todo) => todo.id !== id));
+                };
+
+                const handleClearCompleted = () => {
+                    const completedCount = todos.filter((t) => t.completed).length;
+
+                    if (completedCount === 0) {
+                        alert("Немає виконаних справ!");
+                        return;
+                    }
+
+                    if (window.confirm(`Видалити ${completedCount} виконаних справ?`)) {
+                        setTodos(todos.filter((todo) => !todo.completed));
+                    }
+                };
+
+                const handleDeleteAll = () => {
+                    if (todos.length === 0) {
+                        alert("Список вже порожній!");
+                        return;
+                    }
+
+                    if (window.confirm("Видалити всі справи? Цю дію не можна скасувати!")) {
+                        setTodos([]);
+                        setCurrentFilter("all");
+                    }
+                };
+
+                const getFilteredTodos = () => {
+                    switch (currentFilter) {
+                        case "active":
+                            return todos.filter((todo) => !todo.completed);
+                        case "completed":
+                            return todos.filter((todo) => todo.completed);
+                        default:
+                            return todos;
+                    }
+                };
+
+                const filteredTodos = getFilteredTodos();
+                const completed = todos.filter((t) => t.completed).length;
+                const active = todos.filter((t) => !t.completed).length;
+
+                return (
+                    <div className="container">
+                        <div className="todo-app">
+                            <h1>📝 Мої справи</h1>
+                            <p className="subtitle">React Todo App (CDN версія - без npm!)</p>
+
+                            <TodoInput onAddTodo={handleAddTodo} />
+
+                            <FilterButtons currentFilter={currentFilter} onFilterChange={setCurrentFilter} />
+
+                            <TodoStats total={todos.length} completed={completed} active={active} />
+
+                            <TodoList todos={filteredTodos} onToggle={handleToggleTodo} onDelete={handleDeleteTodo} />
+
+                            <div className="actions">
+                                <button className="clear-btn" onClick={handleClearCompleted}>
+                                    Очистити виконані
+                                </button>
+                                <button className="delete-all-btn" onClick={handleDeleteAll}>
+                                    Видалити все
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const root = ReactDOM.createRoot(document.getElementById("root"));
+            root.render(<App />);
+        </script>
+    </body>
+</html>
