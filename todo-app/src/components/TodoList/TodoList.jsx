@@ -14,8 +14,6 @@ export default function TodoList() {
     const newTodos = [...todos, { id: Date.now(), text: input, completed: false }];
     setTodos(newTodos);
     setInput("");
-
-    setTodosToLocalStorage(newTodos);
   };
 
   useEffect(() => {
@@ -23,21 +21,20 @@ export default function TodoList() {
     setTodos(storedTodos);
   }, []);
 
+  useEffect(() => {
+    setTodosToLocalStorage(todos);
+  }, [todos]);
+
   const handleDeleteTodo = (id) => {
     const filteredTodos = todos.filter((todo) => todo.id !== id);
 
     setTodos(filteredTodos);
-    setTodosToLocalStorage(filteredTodos);
   };
 
   const handleToggleTodo = (id) => {
-    setTodos((oldTodos) => {
-      const updatedTodos = oldTodos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo));
+    const updatedTodos = todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo));
 
-      setTodosToLocalStorage(updatedTodos);
-
-      return updatedTodos;
-    });
+    setTodos(updatedTodos);
   };
 
   return (
